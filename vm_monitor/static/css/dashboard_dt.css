@@ -112,6 +112,17 @@ body {
     position: relative;
     border: 1px solid rgba(96, 165, 250, 0.15);
     overflow: hidden;
+    cursor: move;
+}
+
+.vm-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.vm-card.drag-over {
+    border-color: #60a5fa;
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
 }
 
 .vm-card::before {
@@ -171,8 +182,14 @@ body {
     gap: 8px;
 }
 
+.vm-title-group .drag-handle {
+    font-size: 14px;
+    color: #60a5fa;
+    margin-right: 4px;
+}
+
 .vm-title-group h3 {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     color: #60a5fa;
     margin: 0;
@@ -181,8 +198,8 @@ body {
 
 /* CÍRCULO DE ESTADO - MÁS PEQUEÑO */
 .status-circle {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     display: inline-block;
     box-shadow: 0 0 8px currentColor;
@@ -243,22 +260,21 @@ body {
 }
 
 .vm-last-update {
-    font-size: 0.95em;
+    font-size: 12px;
     color: #64748b;
 }
 
 .vm-ip {
     color: #94a3b8;
-    font-size: 1.1em;
+    font-size: 13px;
     display: flex;
     align-items: center;
     gap: 4px;
-    font-weight: bold;
 }
 
 /* OS VERSION - MÁS COMPACTO */
 .vm-os {
-    font-size: 12px;
+    font-size: 13px;
     color: #64748b;
     padding: 6px 10px;
     background: rgba(96, 165, 250, 0.05);
@@ -276,20 +292,20 @@ body {
     display: flex;
     justify-content: space-between;
     margin-bottom: 6px;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .resource-label {
     font-weight: 600;
     color: #94a3b8;
     text-transform: uppercase;
-    font-size: 0.95em;
+    font-size: 11.5px;
     letter-spacing: 0.5px;
 }
 
 .resource-value {
     font-weight: 700;
-    font-size: 1.1em;
+    font-size: 16px;
     font-family: 'Courier New', monospace;
 }
 
@@ -350,7 +366,7 @@ body {
 
 /* DETALLES DE TAMAÑO - MÁS PEQUEÑO */
 .resource-item > div:last-child {
-    font-size: 10px;
+    font-size: 11px;
     color: #64748b;
     margin-top: 4px;
     font-family: 'Courier New', monospace;
@@ -369,9 +385,9 @@ body {
 }
 
 .updates-badge {
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 12px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -400,7 +416,7 @@ body {
     color: #60a5fa;
     text-decoration: none;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 13px;
     transition: all 0.2s;
     display: flex;
     align-items: center;
@@ -452,26 +468,16 @@ body {
     transform: translateX(-3px);
 }
 
-.history-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.history-table th,
-.history-table td {
-    padding: 12px;
-    text-align: left;
-}
 .info-card,
 .chart-card,
 .partitions-section,
 .history-section {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    padding: 25px;
+    padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(96, 165, 250, 0.15);
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .info-card h3,
@@ -479,7 +485,7 @@ body {
 .partitions-section h3,
 .history-section h3 {
     color: #60a5fa;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     font-size: 18px;
     font-weight: 700;
 }
@@ -583,11 +589,25 @@ input:focus {
     outline-offset: 2px;
 }
 
-/* MODO SIN DATOS */
-.vm-card p[style*="text-align: center"] {
-    color: #64748b;
-    font-size: 13px;
-    padding: 30px 0;
+/* MODO COLAPSADO */
+.vm-card.collapsed .resource-item,
+.vm-card.collapsed .vm-os,
+.vm-card.collapsed .vm-footer {
+    display: none;
+}
+
+.vm-card.collapsed {
+    padding: 12px 18px;
+}
+
+.vm-card.collapsed .vm-meta-row {
+    margin-top: 4px;
+}
+
+.vm-card.collapsed .vm-header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 /* SCROLLBAR PERSONALIZADO */
