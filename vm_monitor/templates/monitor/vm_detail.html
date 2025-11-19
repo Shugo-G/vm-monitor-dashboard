@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ vm.hostname }} - Detalle de VM</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" id="theme-light">
+    <link rel="stylesheet" href="{% static 'css/dashboard_dt.css' %}" id="theme-dark" disabled>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <a href="{% url 'monitor:dashboard' %}" class="back-link">← Volver al Dashboard</a>
+                <h1>📊 {{ vm.hostname }}</h1>
+            </div>
+            <button class="btn btn-primary" onclick="refreshData()">🔄 Actualizar</button>
+        </header>
+
+        <div class="vm-detail-info">
+            <div class="info-card">
+                <h3>Información General</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Hostname:</span>
+                        <span class="info-value">{{ vm.hostname }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">IP:</span>
+                        <span class="info-value" id="ip-address">{{ vm.ip_address|default:"N/A" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Sistema Operativo:</span>
+                        <span class="info-value">{{ vm.os_version }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Primera vez visto:</span>
+                        <span class="info-value">{{ vm.first_seen|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Última actualización:</span>
+                        <span class="info-value" id="last-seen">{{ vm.last_seen|date:"d/m/Y H:i:s" }}</span>
+                    </div>
+                    {% if vm.webmin_url %}
+                    <div class="info-item">
+                        <span class="info-label">Webmin:</span>
+                        <span class="info-value">
+                            <a href="{{ vm.webmin_url }}" target="_blank" class="webmin-link">Abrir Webmin →</a>
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3>📈 Uso de CPU (últimas 24h)</h3>
+                <canvas id="cpu-chart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>💾 Uso de RAM (últimas 24h)</h3>
+                <canvas id="ram-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="partitions-section">
+            <h3>💿 Particiones</h3>
+            <div id="partitions-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando información de particiones...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h3>📜 Historial de Estados</h3>
+            <div class="time-filters">
+                <button class="btn btn-small" onclick="loadHistory(6)">6h</button>
+                <button class="btn btn-small active" onclick="loadHistory(24)">24h</button>
+                <button class="btn btn-small" onclick="loadHistory(72)">3d</button>
+                <button class="btn btn-small" onclick="loadHistory(168)">7d</button>
+            </div>
+            <div id="history-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando historial...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VM_ID = {{ vm.id }};
+    </script>
+    <script src="{% static 'js/vm_detail.js' %}"></script>
+    <script src="{% static 'js/theme_manager.js' %}"></script>
+</body>
+</html>

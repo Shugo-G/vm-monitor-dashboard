@@ -1,0 +1,164 @@
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from datetime import datetime, timedelta
+from django.utils import timezone
+from .models import VirtualMachine, VMStatus, Partition
+from .serializers import (
+    VirtualMachineSerializer, 
+    VMStatusSerializer, 
+    VMStatusInputSerializer
+)
+
+
+def dashboard(request):
+    """Vista principal del dashboard"""
+    return render(request, 'monitor/dashboard.html')
+
+
+def vm_detail(request, vm_id):
+    """Vista de detalle de una VM"""
+    vm = get_object_or_404(VirtualMachine, id=vm_id)
+    return render(request, 'monitor/vm_detail.html', {'vm': vm})
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class StatusAPIView(APIView):
+    """API para recibir estados de las VMs"""
+    
+    def post(self, request):
+        """Recibe y procesa datos de monitoreo"""
+        # El cliente envía un array de datos
+        if not isinstance(request.data, list):
+            return Response(
+                {'error': 'Se esperaba un array de datos'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        results = []
+        
+        for vm_data in request.data:
+            serializer = VMStatusInputSerializer(data=vm_data)
+            
+            if serializer.is_valid():
+                data = serializer.validated_data
+                
+                # Obtener o crear la VM
+                vm, created = VirtualMachine.objects.get_or_create(
+                    hostname=data['hostname'],
+                    defaults={
+                        'os_version': data['os_version'],
+                        'ip_address': data.get('ip_address'),
+                        'webmin_url': data.get('webmin', '')
+                    }
+                )
+                
+                # Actualizar información de la VM
+                vm.os_version = data['os_version']
+                vm.ip_address = data.get('ip_address')
+                vm.webmin_url = data.get('webmin', '')
+                vm.last_seen = timezone.now()
+                vm.save()
+                
+                # Crear registro de estado
+                vm_status = VMStatus.objects.create(
+                    vm=vm,
+                    timestamp=data['timestamp'],
+                    cpu_usage=data['cpu_usage'],
+                    ram_total=data['ram_total'],
+                    ram_used=data['ram_used'],
+                    ram_percent=data['ram_percent'],
+                    disk_total=data['disk_total'],
+                    disk_used=data['disk_used'],
+                    disk_percent=data['disk_percent'],
+                    update_count=data['update_count']
+                )
+                
+                # Crear particiones
+                for partition_data in data.get('partitions', []):
+                    Partition.objects.create(
+                        status=vm_status,
+                        mountpoint=partition_data['mountpoint'],
+                        total_mb=partition_data['total_mb'],
+                        used_mb=partition_data['used_mb'],
+                        used_percent=partition_data['used_percent']
+                    )
+                
+                results.append({
+                    'hostname': vm.hostname,
+                    'created': created,
+                    'status': 'success'
+                })
+            else:
+                results.append({
+                    'hostname': vm_data.get('hostname', 'unknown'),
+                    'status': 'error',
+                    'errors': serializer.errors
+                })
+        
+        return Response({
+            'message': f'Procesados {len(results)} registros',
+            'results': results
+        }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def vm_list(request):
+    """Lista todas las VMs con su último estado"""
+    vms = VirtualMachine.objects.all()
+    serializer = VirtualMachineSerializer(vms, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def vm_history(request, vm_id):
+    """Obtiene el historial de estados de una VM"""
+    vm = get_object_or_404(VirtualMachine, id=vm_id)
+    
+    # Obtener parámetros de tiempo
+    hours = int(request.GET.get('hours', 24))
+    since = timezone.now() - timedelta(hours=hours)
+    
+    # Obtener historial
+    history = VMStatus.objects.filter(
+        vm=vm,
+        timestamp__gte=since
+    ).prefetch_related('partitions')
+    
+    serializer = VMStatusSerializer(history, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['PATCH'])
+def vm_toggle_visibility(request, vm_id):
+    """Alterna la visibilidad de una VM"""
+    vm = get_object_or_404(VirtualMachine, id=vm_id)
+    vm.is_visible = not vm.is_visible
+    vm.save()
+    
+    return Response({
+        'id': vm.id,
+        'hostname': vm.hostname,
+        'is_visible': vm.is_visible
+    })
+
+
+@api_view(['GET'])
+def vm_stats(request, vm_id):
+    """Obtiene estadísticas de una VM para gráficos"""
+    vm = get_object_or_404(VirtualMachine, id=vm_id)
+    
+    hours = int(request.GET.get('hours', 24))
+    since = timezone.now() - timedelta(hours=hours)
+    
+    history = VMStatus.objects.filter(
+        vm=vm,
+        timestamp__gte=since
+    ).order_by('timestamp').values('timestamp', 'cpu_usage', 'ram_percent', 'disk_percent')
+    
+    return Response(list(history))
