@@ -92,36 +92,48 @@ function renderVMs() {
 function createVMCard(vm) {
     const status = vm.latest_status;
     const isCollapsed = collapsedVMs.has(vm.id);
-    
-    // Lógica de estado
+
     let statusCircleClass = 'status-circle';
     let lastUpdateFormatted = 'Sin datos';
     let statusText = 'Desconocido';
     const isTrulyStale = vm.is_stale || !status;
-    
+
+    let cardBorderClass = '';
+
     if (status) {
         const date = new Date(status.timestamp);
-        lastUpdateFormatted = date.toLocaleString('es-AR', { 
-            year: 'numeric', month: '2-digit', day: '2-digit', 
-            hour: '2-digit', minute: '2-digit', second: '2-digit' 
+        lastUpdateFormatted = date.toLocaleString('es-AR', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
         });
-        
+
         if (vm.is_stale) {
             statusCircleClass += ' stale-offline';
             statusText = '🔴 Offline';
+            cardBorderClass = 'stale-card';
         } else {
             statusCircleClass += ' online';
             statusText = '🟢 Online';
+
+            const maxResource = Math.max(status.cpu_usage, status.ram_percent, status.disk_percent);
+            if (maxResource > 80) {
+                cardBorderClass = 'danger-card';
+            } else if (maxResource > 50) {
+                cardBorderClass = 'warning-card';
+            } else {
+                cardBorderClass = 'success-card';
+            }
         }
     } else {
         statusCircleClass += ' stale-offline';
         statusText = '🔴 Sin datos';
+        cardBorderClass = 'stale-card';
     }
 
     // Sin datos de estado
     if (!status) {
         return `
-            <div class="vm-card ${vm.is_visible ? '' : 'hidden'} ${isTrulyStale ? 'stale-card' : ''} ${isCollapsed ? 'collapsed' : ''}" 
+            <div class="vm-card ${vm.is_visible ? '' : 'hidden'} ${cardBorderClass} ${isCollapsed ? 'collapsed' : ''}"
                  data-vm-id="${vm.id}" draggable="true">
                 <div class="vm-header">
                     <div class="vm-title-group">
@@ -130,11 +142,11 @@ function createVMCard(vm) {
                         <span class="${statusCircleClass}" title="${statusText}"></span>
                     </div>
                     <div class="vm-actions">
-                        <button class="icon-btn" onclick="toggleCollapse(${vm.id})" 
+                        <button class="icon-btn" onclick="toggleCollapse(${vm.id})"
                                 title="${isCollapsed ? 'Expandir' : 'Contraer'}">
                             ${isCollapsed ? '📂' : '📁'}
                         </button>
-                        <button class="icon-btn" onclick="toggleVisibility(${vm.id})" 
+                        <button class="icon-btn" onclick="toggleVisibility(${vm.id})"
                                 title="${vm.is_visible ? 'Ocultar VM' : 'Mostrar VM'}">
                             ${vm.is_visible ? '👁️' : '👁️‍🗨️'}
                         </button>
@@ -171,9 +183,9 @@ function createVMCard(vm) {
     const ramColor = getStatusColor(status.ram_percent);
     const diskColor = getStatusColor(status.disk_percent);
     const updateBadge = getUpdateBadge(status.update_count);
-    
+
     return `
-        <div class="vm-card ${vm.is_visible ? '' : 'hidden'} ${isTrulyStale ? 'stale-card' : ''} ${isCollapsed ? 'collapsed' : ''}" 
+        <div class="vm-card ${vm.is_visible ? '' : 'hidden'} ${cardBorderClass} ${isCollapsed ? 'collapsed' : ''}"
              data-vm-id="${vm.id}" draggable="true">
             <div class="vm-header">
                 <div class="vm-title-group">
