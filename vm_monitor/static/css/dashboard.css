@@ -204,11 +204,9 @@ body:not(.dark-theme) .header h1 {
 /* ============================================ */
 
 .vm-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-    grid-auto-rows: min-content;
-    align-items: start;
+    column-count: auto;
+    column-width: 320px;
+    column-gap: 20px;
 }
 
 /* ============================================ */
@@ -224,6 +222,8 @@ body:not(.dark-theme) .header h1 {
     position: relative;
     border: 1px solid var(--border-color);
     height: fit-content;
+    break-inside: avoid;
+    margin-bottom: 20px;
 }
 
 .vm-card:hover {
