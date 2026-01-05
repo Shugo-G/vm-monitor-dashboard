@@ -218,3 +218,5 @@ __pycache__/
 *.tmp
 *.temp
 .cache/
+
+vm_monitor/db.sqlite3
