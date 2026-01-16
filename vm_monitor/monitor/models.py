@@ -11,7 +11,7 @@ class VirtualMachine(models.Model):
     webmin_url = models.URLField(max_length=500, blank=True, null=True)
     is_visible = models.BooleanField(default=True)
     first_seen = models.DateTimeField(auto_now_add=True)
-    last_seen = models.DateTimeField(auto_now=True)
+    last_seen = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['hostname']

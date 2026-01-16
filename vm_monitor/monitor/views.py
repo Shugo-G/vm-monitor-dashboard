@@ -16,15 +16,8 @@ from .serializers import (
 )
 
 
-def dashboard(request):
-    """Vista principal del dashboard"""
-    return render(request, 'monitor/dashboard.html')
-
-
-def vm_detail(request, vm_id):
-    """Vista de detalle de una VM"""
-    vm = get_object_or_404(VirtualMachine, id=vm_id)
-    return render(request, 'monitor/vm_detail.html', {'vm': vm})
+# Las vistas HTML han sido eliminadas para ser reemplazadas por un frontend en Svelte.
+# La API se mantiene intacta a continuación.
 
 
 @method_decorator(csrf_exempt, name='dispatch')

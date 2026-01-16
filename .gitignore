@@ -1,12 +1,8 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -26,77 +22,14 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
-
-# Django stuff:
+# Django
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-Pipfile.lock
-
-# poetry
-poetry.lock
-
-# pdm
-.pdm.toml
-
-# PEP 582
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
+vm_monitor/db.sqlite3
+staticfiles/
+media/
 
 # Environments
 .env
@@ -104,54 +37,12 @@ celerybeat.pid
 env/
 venv/
 ENV/
-env.bak/
-venv.bak/
+*.bak
+*.swp
 
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# Django specific
-*.pot
-staticfiles/
-media/
-*.mo
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# IDE - VSCode
+# IDEs
 .vscode/
-*.code-workspace
-
-# IDE - PyCharm
 .idea/
-*.iml
-*.iws
-
-# IDE - Sublime Text
 *.sublime-project
 *.sublime-workspace
 
@@ -159,64 +50,20 @@ media/
 .DS_Store
 .DS_Store?
 ._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-*~
 
-# Backup files
-*.bak
-*.swp
-*.swo
-*~
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
 
-# Logs
-logs/
-*.log
-
-# Local development settings
-local_settings.py
-settings_local.py
-
-# Secret keys and sensitive data
-*.pem
-*.key
-secrets.json
-.env.local
-.env.production
-
-# Static files collected
-/static/
-/staticfiles/
-
-# Media files
-/media/
-
-# Node modules (si usas frontend tooling)
-node_modules/
-npm-debug.log
-yarn-error.log
-
-# Coverage reports
-htmlcov/
-.coverage
-
-# Migrations (opcional - descomenta si no quieres versionar migraciones)
-# */migrations/*.py
-# !*/migrations/__init__.py
-
-# Archivos de configuración personalizados
-config.local.yml
-secrets.yml
-
-# Cache de Python
-*.pyc
-__pycache__/
-
-# Archivos temporales
-*.tmp
-*.temp
-.cache/
-
-vm_monitor/db.sqlite3
+# Database backups
+*.db
+*.sqlite
+*.sqlite3

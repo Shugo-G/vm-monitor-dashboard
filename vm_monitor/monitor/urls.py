@@ -4,10 +4,6 @@ from . import views
 app_name = 'monitor'
 
 urlpatterns = [
-    # Vistas HTML
-    path('', views.dashboard, name='dashboard'),
-    path('vm/<int:vm_id>/', views.vm_detail, name='vm_detail'),
-    
     # API endpoints
     path('api/status/', views.StatusAPIView.as_view(), name='api_status'),
     path('api/vms/', views.vm_list, name='api_vm_list'),
