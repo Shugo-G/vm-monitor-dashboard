@@ -141,6 +141,26 @@ def vm_toggle_visibility(request, vm_id):
     })
 
 
+@api_view(['PATCH'])
+def vm_bulk_visibility(request):
+    """Actualiza la visibilidad de varias VMs a la vez"""
+    vm_ids = request.data.get('vm_ids', [])
+    visible = request.data.get('is_visible', True)
+    
+    if not isinstance(vm_ids, list):
+        return Response(
+            {'error': 'vm_ids debe ser una lista'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        
+    VirtualMachine.objects.filter(id__in=vm_ids).update(is_visible=visible)
+    
+    return Response({
+        'message': f'Se ha actualizado la visibilidad de {len(vm_ids)} VMs',
+        'is_visible': visible
+    })
+
+
 @api_view(['GET'])
 def vm_stats(request, vm_id):
     """Obtiene estadísticas de una VM para gráficos"""

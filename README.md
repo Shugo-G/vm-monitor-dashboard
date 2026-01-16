@@ -2,17 +2,16 @@
 
 Sistema de monitoreo en tiempo real para máquinas virtuales y servidores, desarrollado con Django (Backend) y Svelte (Frontend).
 
-![Dashboard Preview](https://via.placeholder.com/800x400/0a0e27/60a5fa?text=ShugoVision+Dashboard)
 
 ## ✨ Características
 
 - 📊 **Dashboard en tiempo real** con auto-refresh optimizado.
-- 🎨 **Interfaz moderna** con tema oscuro y diseño intuitivo.
-- 📈 **Visualización de recursos**: CPU, RAM y Disco con indicadores visuales.
+- 🎨 **Interfaz moderna** con tema oscuro, modo claro y diseño intuitivo.
+- 📈 **Visualización de recursos**: CPU, RAM y Disco con indicadores de colores independientes (verde/amarillo/rojo).
 - 🔄 **Auto-registro**: Las VMs se agregan automáticamente al recibir datos.
-- 👁️ **Control de visibilidad**: Oculta/muestra VMs individualmente desde el dashboard.
+- 👁️ **Control de visibilidad**: Oculta/muestra VMs individualmente o mediante filtros personalizados por nombre.
 - 📉 **Historial detallado** con gráficos interactivos.
-- ⚡ **Indicadores de estado**: Identificación visual de VMs online/offline.
+- ⚡ **Indicadores de estado**: Identificación visual de VMs online/offline y criticidad global de la tarjeta.
 - 📱 **Diseño responsive** para acceso desde cualquier dispositivo.
 
 ## 📁 Estructura del Proyecto
@@ -87,9 +86,10 @@ npm run dev
 
 ## 🔌 API Endpoints Principales
 
-- `GET /api/vms/`: Lista todas las VMs.
-- `POST /api/status/`: Recibe actualizaciones de estado.
-- `GET /api/vms/{id}/history/`: Obtiene el historial de métricas.
+- `GET /api/vms/`: Lista todas las VMs con su último estado.
+- `POST /api/status/`: Recibe actualizaciones de estado de una o varias VMs.
+- `GET /api/vms/{id}/history/`: Obtiene el historial detallado de métricas por horas.
+- `PATCH /api/vms/bulk-visibility/`: Actualización masiva de visibilidad (útil para sistemas de filtrado).
 
 ## 👨‍💻 Autor
 **Hugo Giovanetti**
