@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-prod-secret-key-123}
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=backend,frontend,localhost,127.0.0.1
+      - DB_PATH=/app/data/db.sqlite3
+    volumes:
+      - static_volume:/app/static_root
+      - data_volume:/app/data
+    restart: always
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/static_root:ro
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  static_volume:
+  data_volume:
