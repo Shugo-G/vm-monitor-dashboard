@@ -10,10 +10,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-# Avoid ignoring frontend libraries
-!frontend/src/lib/
 lib/
 lib64/
+# Avoid ignoring frontend libraries
+!frontend/src/lib/
 parts/
 sdist/
 var/
