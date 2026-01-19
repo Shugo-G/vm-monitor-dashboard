@@ -1,0 +1,16 @@
+# Production overrides (Nginx Proxy Manager)
+services:
+  backend:
+    env_file: .env
+    networks:
+      - npm-net
+
+  frontend:
+    # No ports exposed to host. NPM handles traffic via the network.
+    networks:
+      - npm-net
+
+networks:
+  npm-net:
+    external: true
+    name: nginx-proxy-manager_npm-net

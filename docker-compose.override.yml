@@ -1,0 +1,8 @@
+# Local development overrides
+services:
+  backend:
+    ports:
+      - "8000:8000" # Direct API access
+  frontend:
+    ports:
+      - "8080:80" # Local access via http://localhost:8080

@@ -10,6 +10,8 @@ dist/
 downloads/
 eggs/
 .eggs/
+# Avoid ignoring frontend libraries
+!frontend/src/lib/
 lib/
 lib64/
 parts/
@@ -33,6 +35,7 @@ media/
 
 # Environments
 .env
+!.env.example
 .venv
 env/
 venv/

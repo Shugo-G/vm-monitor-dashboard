@@ -21,7 +21,7 @@ def generate_test_vms():
         'AlmaLinux 9'
     ]
     
-    for i in range(1, 11):
+    for i in range(1, 9):
         hostname = f'test-vm-{i:02d}'
         ip = f'192.168.1.{100 + i}'
         
@@ -77,6 +77,6 @@ def generate_test_vms():
         print(f'  └─ Estado y {num_partitions} particiones creadas')
 
 if __name__ == '__main__':
-    print('Generando 10 VMs de prueba...\n')
+    print('Generando 8 VMs de prueba...\n')
     generate_test_vms()
     print('\n✓ Proceso completado')

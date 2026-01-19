@@ -14,7 +14,8 @@ import sys
 import subprocess
 
 # Configuración
-API_URL = "http://172.20.49.151:8000/api/status/"  # Cambiar por tu URL
+API_URL = "http://localhost:8080/api/status/"  # Desarrollo local: usar puerto 8080 (Frontend/Nginx)
+# En producción usar: "http://server-monitor.ushuaia.gob.ar/api/status/"
 #WEBMIN_PORT = 10000  # Puerto de Webmin si está instalado
 
 

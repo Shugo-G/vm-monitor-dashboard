@@ -1,26 +1,27 @@
-version: '3.8'
-
 services:
   backend:
+    container_name: monitor-backend
     build:
       context: .
       dockerfile: backend.Dockerfile
     environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-prod-secret-key-123}
-      - DJANGO_DEBUG=False
-      - DJANGO_ALLOWED_HOSTS=backend,frontend,localhost,127.0.0.1
-      - DB_PATH=/app/data/db.sqlite3
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-development-secret-key}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-server-monitor.ushuaia.gob.ar,localhost,127.0.0.1}
+      - DB_PATH=${DB_PATH:-/app/data/db.sqlite3}
+      - TZ=${TZ:-America/Argentina/Ushuaia}
     volumes:
       - static_volume:/app/static_root
       - data_volume:/app/data
     restart: always
 
   frontend:
+    container_name: monitor-frontend
     build:
       context: .
       dockerfile: frontend.Dockerfile
-    ports:
-      - "80:80"
+    environment:
+      - TZ=${TZ:-America/Argentina/Ushuaia}
     volumes:
       - static_volume:/app/static_root:ro
     depends_on:
