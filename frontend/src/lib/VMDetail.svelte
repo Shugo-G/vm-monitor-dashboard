@@ -49,37 +49,51 @@
 
     onMount(loadData);
 
+    function formatLabel(timestamp) {
+        const d = new Date(timestamp);
+        if (selectedHours >= 168) {
+            return d.toLocaleDateString("es-AR", { weekday: "short", day: "2-digit", month: "2-digit" });
+        }
+        return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+    }
+
     $: chartData = {
-        labels: stats.map((s) => new Date(s.timestamp).toLocaleTimeString()),
+        labels: stats.map((s) => formatLabel(s.timestamp)),
         datasets: [
             {
                 label: "CPU %",
                 data: stats.map((s) => s.cpu_usage),
                 borderColor: "#00f2ff",
-                backgroundColor: "rgba(0, 242, 255, 0.2)",
+                backgroundColor: "rgba(0, 242, 255, 0.1)",
                 tension: 0.4,
                 fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 4,
             },
             {
                 label: "RAM %",
                 data: stats.map((s) => s.ram_percent),
                 borderColor: "#ff00ff",
-                backgroundColor: "rgba(255, 0, 255, 0.2)",
+                backgroundColor: "rgba(255, 0, 255, 0.1)",
                 tension: 0.4,
                 fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 4,
             },
             {
                 label: "Disk %",
                 data: stats.map((s) => s.disk_percent),
                 borderColor: "#bcff00",
-                backgroundColor: "rgba(188, 255, 0, 0.2)",
+                backgroundColor: "rgba(188, 255, 0, 0.1)",
                 tension: 0.4,
                 fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 4,
             },
         ],
     };
 
-    const chartOptions = {
+    $: chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -91,7 +105,13 @@
             },
             x: {
                 grid: { color: "rgba(255, 255, 255, 0.1)" },
-                ticks: { color: "#94a3b8", maxRotation: 45, minRotation: 45 },
+                ticks: {
+                    color: "#94a3b8",
+                    maxRotation: 45,
+                    minRotation: 45,
+                    maxTicksLimit: selectedHours >= 168 ? 7 : selectedHours,
+                    autoSkip: true,
+                },
             },
         },
         plugins: {
@@ -123,6 +143,9 @@
                 <div class="meta-info">
                     <span class="ip-tag">{vm.ip_address}</span>
                     <span class="os-highlight">{vm.os_version}</span>
+                    {#if latestStatus.ram_total}
+                        <span class="ram-tag">{(latestStatus.ram_total / 1024).toFixed(0)} GB RAM</span>
+                    {/if}
                     {#if latestStatus.update_count > 0}
                         <div class="update-tag warning">
                             <svg
@@ -208,7 +231,7 @@
 
             <section class="history-section">
                 <div class="section-header">
-                    <h3>Historial (Últimas {selectedHours}h)</h3>
+                    <h3>Historial ({selectedHours >= 168 ? "Última semana" : `Últimas ${selectedHours}h`})</h3>
                     <select
                         bind:value={selectedHours}
                         on:change={loadData}
@@ -289,6 +312,17 @@
         font-weight: 700;
         color: var(--accent-cyan);
         text-shadow: 0 0 5px rgba(0, 242, 255, 0.3);
+    }
+
+    .ram-tag {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-dim);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-family: monospace;
     }
 
     .meta-info {
