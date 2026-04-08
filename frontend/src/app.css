@@ -1,6 +1,6 @@
 :root {
-  --bg-dark: #0a0e14;
-  --bg-card: rgba(16, 22, 30, 0.8);
+  --bg-dark: #04070d;
+  --bg-card: rgba(18, 30, 50, 0.95);
   --accent-cyan: #00f2ff;
   --accent-magenta: #ff00ff;
   --accent-lime: #bcff00;
@@ -33,7 +33,11 @@ body {
   padding: 0;
   min-height: 100vh;
   background-color: var(--bg-dark);
-  background: radial-gradient(circle at 50% 50%, #1a2230 0%, #0a0e14 100%);
+  background-image:
+    linear-gradient(rgba(0, 242, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 242, 255, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, #0d1520 0%, #04070d 100%);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
   background-attachment: fixed;
   color: var(--text-main);
 }

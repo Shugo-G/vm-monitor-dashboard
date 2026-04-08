@@ -112,17 +112,6 @@
         draggedVmId = null;
     }
 
-    let isLightTheme = false;
-
-    function toggleTheme() {
-        isLightTheme = !isLightTheme;
-        if (isLightTheme) {
-            document.body.classList.add("light-theme");
-        } else {
-            document.body.classList.remove("light-theme");
-        }
-    }
-
     function toggleAll(expand) {
         globalExpanded = expand;
     }
@@ -222,11 +211,6 @@
                         title="Expandir Todas"
                         >[+]
                     </button>
-                    <button
-                        class="nav-btn icon-btn"
-                        on:click={toggleTheme}
-                        title="Cambiar Tema">🌓</button
-                    >
                     <label class="compact-toggle">
                         <input type="checkbox" bind:checked={showHidden} />
                         <span class="toggle-text">Ocultos</span>

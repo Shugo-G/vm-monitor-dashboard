@@ -82,6 +82,9 @@
     class="vm-card"
     class:hidden={!isLocallyVisible}
     class:collapsed={!isExpanded}
+    class:border-danger={worstLevel === 'danger'}
+    class:border-warning={worstLevel === 'warning'}
+    class:border-success={worstLevel === 'success'}
     draggable="true"
     role="listitem"
     tabIndex="-1"
@@ -269,9 +272,10 @@
 
 <style>
     .vm-card {
-        background: rgba(14, 20, 30, 0.85);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(18, 30, 52, 0.98);
+        border: 1px solid rgba(0, 242, 255, 0.25);
         border-radius: 10px;
+
         padding: 1rem;
         display: flex;
         flex-direction: column;
@@ -296,6 +300,10 @@
         opacity: 0.4;
         filter: grayscale(0.8);
     }
+
+    .vm-card.border-success { border-color: var(--success); box-shadow: 0 0 8px rgba(51, 255, 119, 0.2); }
+    .vm-card.border-warning { border-color: var(--warning); box-shadow: 0 0 8px rgba(255, 204, 0, 0.2); }
+    .vm-card.border-danger  { border-color: var(--danger);  box-shadow: 0 0 8px rgba(255, 77, 77, 0.2); }
 
     .vm-card.collapsed {
         padding-bottom: 0.75rem;
