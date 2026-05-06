@@ -27,8 +27,8 @@ class VirtualMachineSerializer(serializers.ModelSerializer):
     class Meta:
         model = VirtualMachine
         fields = [
-            'id', 'hostname', 'ip_address', 'os_version', 'webmin_url',
-            'is_visible', 'first_seen', 'last_seen', 'latest_status', 'last_seen', 'is_stale',
+            'id', 'hostname', 'display_name', 'ip_address', 'os_version', 'description',
+            'is_visible', 'first_seen', 'last_seen', 'latest_status', 'is_stale',
         ]
     
     def get_latest_status(self, obj):
@@ -51,9 +51,9 @@ class VMStatusInputSerializer(serializers.Serializer):
     disk_total = serializers.FloatField()
     disk_used = serializers.FloatField()
     disk_percent = serializers.FloatField()
+    machine_id = serializers.CharField(max_length=64, required=False, allow_blank=True, allow_null=True)
     update_count = serializers.IntegerField(default=-1)
     timestamp = serializers.DateTimeField()
-    webmin = serializers.URLField(required=False, allow_blank=True)
     partitions = serializers.ListField(
         child=serializers.DictField(),
         required=False,

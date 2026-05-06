@@ -12,11 +12,42 @@ import requests
 from datetime import datetime
 import sys
 import subprocess
+import uuid
+from pathlib import Path
 
 # Configuración
-API_URL = "http://localhost:8080/api/status/"  # Desarrollo local: usar puerto 8080 (Frontend/Nginx)
-# En producción usar: "http://server-monitor.ushuaia.gob.ar/api/status/"
+API_URL = "http://192.168.75.128:8080/api/status/"
+# Desarrollo local: "http://<IP_DEL_SERVIDOR>:8080/api/status/"
 #WEBMIN_PORT = 10000  # Puerto de Webmin si está instalado
+
+
+def get_machine_id():
+    """Obtiene un identificador estable de la máquina."""
+    if platform.system() == 'Linux':
+        try:
+            return Path('/etc/machine-id').read_text().strip()
+        except OSError:
+            pass
+    elif platform.system() == 'Windows':
+        try:
+            import winreg
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                                 r'SOFTWARE\Microsoft\Cryptography')
+            value, _ = winreg.QueryValueEx(key, 'MachineGuid')
+            winreg.CloseKey(key)
+            return value
+        except Exception:
+            pass
+    # Fallback: UUID persistido en un archivo local junto al script
+    id_file = Path(__file__).parent / '.machine-id'
+    try:
+        if id_file.exists():
+            return id_file.read_text().strip()
+        new_id = str(uuid.uuid4())
+        id_file.write_text(new_id)
+        return new_id
+    except OSError:
+        return None
 
 
 def get_hostname():
@@ -133,28 +164,15 @@ def get_update_count():
     return -1  # -1 indica que no se pudo obtener la información
 
 
-def get_webmin_url():
-    """Genera la URL de Webmin si está disponible"""
-    hostname = get_hostname()
-    # Intentar obtener el FQDN
-#    try:
-#        fqdn = socket.getfqdn()
-#        if fqdn and fqdn != hostname:
-#            hostname = fqdn
-#    except:
-#        pass
-    
-    return f"https://{hostname}.ushuaia.gob.ar:10000"
-
-
 def collect_stats():
     """Recopila todas las estadísticas del sistema"""
     ram_info = get_ram_info()
     disk_info = get_disk_info()
     
     data = {
+        'machine_id': get_machine_id(),
         'hostname': get_hostname(),
-        'ip_address': get_ip_address(),  # ← NUEVO CAMPO
+        'ip_address': get_ip_address(),
         'os_version': get_os_version(),
         'cpu_usage': get_cpu_usage(),
         'ram_total': ram_info['total'],
@@ -165,7 +183,6 @@ def collect_stats():
         'disk_percent': disk_info['percent'],
         'update_count': get_update_count(),
         'timestamp': datetime.now().astimezone().isoformat(),
-        'webmin': get_webmin_url(),
         'partitions': disk_info['partitions']
     }
     

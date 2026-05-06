@@ -41,20 +41,29 @@ class StatusAPIView(APIView):
             if serializer.is_valid():
                 data = serializer.validated_data
                 
-                # Obtener o crear la VM
-                vm, created = VirtualMachine.objects.get_or_create(
-                    hostname=data['hostname'],
-                    defaults={
-                        'os_version': data['os_version'],
-                        'ip_address': data.get('ip_address'),
-                        'webmin_url': data.get('webmin', '')
-                    }
-                )
-                
-                # Actualizar información de la VM
+                # Buscar o crear la VM por machine_id (si viene), con fallback a hostname
+                machine_id = data.get('machine_id')
+                hostname = data['hostname']
+                created = False
+
+                if machine_id:
+                    try:
+                        vm = VirtualMachine.objects.get(machine_id=machine_id)
+                    except VirtualMachine.DoesNotExist:
+                        # Reporter nuevo en máquina ya registrada por hostname → migrar
+                        try:
+                            vm = VirtualMachine.objects.get(hostname=hostname, machine_id__isnull=True)
+                            vm.machine_id = machine_id
+                        except VirtualMachine.DoesNotExist:
+                            vm = VirtualMachine(machine_id=machine_id)
+                            created = True
+                else:
+                    # Reporter viejo sin machine_id → fallback a hostname
+                    vm, created = VirtualMachine.objects.get_or_create(hostname=hostname)
+
+                vm.hostname = hostname
                 vm.os_version = data['os_version']
                 vm.ip_address = data.get('ip_address')
-                vm.webmin_url = data.get('webmin', '')
                 vm.last_seen = timezone.now()
                 vm.save()
                 
@@ -165,13 +174,29 @@ def vm_bulk_visibility(request):
 def vm_stats(request, vm_id):
     """Obtiene estadísticas de una VM para gráficos"""
     vm = get_object_or_404(VirtualMachine, id=vm_id)
-    
+
     hours = int(request.GET.get('hours', 24))
     since = timezone.now() - timedelta(hours=hours)
-    
+
     history = VMStatus.objects.filter(
         vm=vm,
         timestamp__gte=since
     ).order_by('timestamp').values('timestamp', 'cpu_usage', 'ram_percent', 'disk_percent')
-    
+
     return Response(list(history))
+
+
+@api_view(['PATCH'])
+def vm_update(request, vm_id):
+    """Actualiza campos editables de una VM (descripción, alias, etc.)"""
+    vm = get_object_or_404(VirtualMachine, id=vm_id)
+    fields_changed = []
+    if 'description' in request.data:
+        vm.description = request.data['description']
+        fields_changed.append('description')
+    if 'display_name' in request.data:
+        vm.display_name = request.data['display_name']
+        fields_changed.append('display_name')
+    if fields_changed:
+        vm.save(update_fields=fields_changed)
+    return Response({'id': vm.id, 'description': vm.description, 'display_name': vm.display_name})

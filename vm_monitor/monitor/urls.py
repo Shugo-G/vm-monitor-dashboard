@@ -12,5 +12,6 @@ urlpatterns = [
     path('api/vms/bulk-visibility/', views.vm_bulk_visibility, name='api_vm_bulk_visibility'),
     #path('api/vms/<int:vm_id>/toggle/', views.ToggleVisibilityAPIView.as_view(), name='api_vm_toggle'),
     path('api/vms/<int:vm_id>/stats/', views.vm_stats, name='api_vm_stats'),
+    path('api/vms/<int:vm_id>/', views.vm_update, name='api_vm_update'),
     #path('api/vms/<int:vm_id>/ping/', views.vm_ping, name='api_vm_ping'),
 ]

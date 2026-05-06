@@ -1,23 +1,14 @@
-# Stage 1: Build Svelte app
-FROM node:20-slim AS build-stage
-
-WORKDIR /app
-
-COPY frontend/package*.json ./
-RUN npm install
-
-COPY frontend/ ./
-RUN npm run build
-
-# Stage 2: Serve with Nginx
+# frontend.Dockerfile
 FROM nginx:alpine
 
-# Copy built files
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+# Copy frontend files
+COPY frontend/ /usr/share/nginx/html/
 
-# Copy nginx config
+# Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Expose port
 EXPOSE 80
 
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]

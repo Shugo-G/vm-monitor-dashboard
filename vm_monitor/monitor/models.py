@@ -5,10 +5,12 @@ from datetime import timedelta
 
 class VirtualMachine(models.Model):
     """Modelo para almacenar información de las VMs"""
-    hostname = models.CharField(max_length=255, unique=True)
+    machine_id = models.CharField(max_length=64, unique=True, null=True, blank=True)
+    hostname = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255, blank=True, default='')
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     os_version = models.CharField(max_length=255)
-    webmin_url = models.URLField(max_length=500, blank=True, null=True)
+    description = models.TextField(blank=True, default='')
     is_visible = models.BooleanField(default=True)
     first_seen = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(default=timezone.now)

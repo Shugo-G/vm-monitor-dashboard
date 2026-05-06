@@ -1,0 +1,95 @@
+/* ShugoVision — Redesign */
+:root {
+  --bg-0: #05070d;
+  --bg-1: #111827;
+  --bg-2: #1a2336;
+  --bg-3: #232e48;
+  --bg-card: #1d2740;
+  --bg-card-hover: #243150;
+  --border: #2e3a58;
+  --border-strong: #44527a;
+  --text-0: #e8ecf4;
+  --text-1: #b4bdd1;
+  --text-2: #6f7a92;
+  --text-3: #4a5368;
+
+  --cyan: #00f5ff;
+  --cyan-dim: #00c8d4;
+  --cyan-glow: rgba(0, 245, 255, 0.25);
+  --magenta: #ff2e9a;
+  --magenta-dim: #d1257d;
+  --magenta-glow: rgba(255, 46, 154, 0.25);
+  --yellow: #ffe60a;
+  --yellow-dim: #d4be00;
+  --yellow-glow: rgba(255, 230, 10, 0.2);
+  --green: #2fffb0;
+  --green-dim: #1ccb88;
+  --green-glow: rgba(47, 255, 176, 0.25);
+  --red: #ff3b5c;
+  --red-glow: rgba(255, 59, 92, 0.3);
+
+  --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+
+  --grid: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body {
+  background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(0, 245, 255, 0.06), transparent 60%),
+    radial-gradient(900px 600px at 95% 110%, rgba(255, 46, 154, 0.05), transparent 60%),
+    var(--bg-0);
+  background-attachment: fixed;
+}
+
+/* subtle grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+input { font-family: inherit; color: inherit; }
+
+.mono { font-family: var(--mono); font-feature-settings: 'ss01', 'cv11'; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-1); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2f3b55; }
+
+/* Utility */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }

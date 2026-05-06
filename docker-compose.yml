@@ -14,6 +14,13 @@ services:
       - static_volume:/app/static_root
       - data_volume:/app/data
     restart: always
+    networks:
+      - shugovision-net
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/vms/')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     container_name: monitor-frontend
@@ -24,10 +31,19 @@ services:
       - TZ=${TZ:-America/Argentina/Ushuaia}
     volumes:
       - static_volume:/app/static_root:ro
+    ports:
+      - "8080:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: always
+    networks:
+      - shugovision-net
 
 volumes:
   static_volume:
   data_volume:
+
+networks:
+  shugovision-net:
+    driver: bridge
