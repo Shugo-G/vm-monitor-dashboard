@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 VM Monitoring Client — Producción
-Envía estadísticas del sistema a https://shugovision.dposs.gob.ar
+Envía estadísticas del sistema a http://shugovision.dposs.gob.ar
 """
 
 import psutil
@@ -14,7 +14,7 @@ import subprocess
 import uuid
 from pathlib import Path
 
-API_URL = "https://shugovision.dposs.gob.ar/api/status/"
+API_URL = "http://shugovision.dposs.gob.ar/api/status/"
 
 
 def get_machine_id():

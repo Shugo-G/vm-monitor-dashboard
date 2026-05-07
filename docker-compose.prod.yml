@@ -7,7 +7,7 @@ services:
       - npm-net
 
   frontend:
-    ports: []          # NPM maneja el tráfico, no exponemos al host
+    ports: !reset []   # NPM maneja el tráfico, no exponemos al host
     networks:
       - shugovision-net
       - npm-net
