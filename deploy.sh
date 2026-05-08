@@ -9,7 +9,7 @@ echo "🚀 Starting deployment..."
 
 # 1. Pull latest changes from git
 echo "📥 Pulling latest code changes..."
-git pull origin main
+git pull origin docker-dposs
 
 # 2. Check for .env file
 if [ ! -f .env ]; then
@@ -28,4 +28,4 @@ echo "🧹 Cleaning up old Docker images..."
 docker image prune -f
 
 echo "✅ Deployment finished successfully!"
-echo "📍 Access your app at: http://server-monitor.ushuaia.gob.ar"
+echo "📍 Access your app at: https://shugovision.dposs.gob.ar"
