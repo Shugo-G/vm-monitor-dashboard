@@ -34,25 +34,18 @@ class StatusAPIView(APIView):
             if serializer.is_valid():
                 data = serializer.validated_data
 
-                # Buscar o crear la VM por machine_id (si viene), con fallback a hostname
                 machine_id = data.get('machine_id')
                 hostname = data['hostname']
                 created = False
 
                 if machine_id:
-                    try:
-                        vm = VirtualMachine.objects.get(machine_id=machine_id)
-                    except VirtualMachine.DoesNotExist:
-                        # Reporter nuevo en máquina ya registrada por hostname → migrar
-                        try:
-                            vm = VirtualMachine.objects.get(hostname=hostname, machine_id__isnull=True)
-                            vm.machine_id = machine_id
-                        except VirtualMachine.DoesNotExist:
-                            vm = VirtualMachine(machine_id=machine_id)
-                            created = True
+                    vm, created = VirtualMachine.objects.get_or_create(machine_id=machine_id)
                 else:
-                    # Reporter viejo sin machine_id → fallback a hostname
-                    vm, created = VirtualMachine.objects.get_or_create(hostname=hostname)
+                    # Reporter sin machine_id: buscar solo entre los que tampoco lo tienen
+                    vm = VirtualMachine.objects.filter(hostname=hostname, machine_id__isnull=True).first()
+                    if vm is None:
+                        vm = VirtualMachine()
+                        created = True
 
                 vm.hostname = hostname
                 vm.os_version = data['os_version']
