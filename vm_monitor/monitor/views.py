@@ -39,12 +39,20 @@ class StatusAPIView(APIView):
                 created = False
 
                 if machine_id:
-                    vm, created = VirtualMachine.objects.get_or_create(
-                        machine_id=machine_id,
-                        defaults={'hostname': hostname}
-                    )
+                    try:
+                        vm = VirtualMachine.objects.get(machine_id=machine_id)
+                        created = False
+                    except VirtualMachine.DoesNotExist:
+                        # Buscar registro existente por hostname para migrar (no crear duplicado)
+                        existing = VirtualMachine.objects.filter(hostname=hostname).order_by('-last_seen').first()
+                        if existing and existing.machine_id is None:
+                            existing.machine_id = machine_id
+                            vm = existing
+                            created = False
+                        else:
+                            vm = VirtualMachine(machine_id=machine_id)
+                            created = True
                 else:
-                    # Reporter sin machine_id: buscar por hostname sin importar machine_id
                     vm = VirtualMachine.objects.filter(hostname=hostname).order_by('-last_seen').first()
                     if vm is None:
                         vm = VirtualMachine()
