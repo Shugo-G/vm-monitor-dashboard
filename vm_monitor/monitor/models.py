@@ -5,7 +5,7 @@ from datetime import timedelta
 
 class VirtualMachine(models.Model):
     """Modelo para almacenar información de las VMs"""
-    machine_id = models.CharField(max_length=64, unique=True, null=True, blank=True)
+    machine_id = models.CharField(max_length=64, null=True, blank=True)
     hostname = models.CharField(max_length=255)
     display_name = models.CharField(max_length=255, blank=True, default='')
     ip_address = models.GenericIPAddressField(null=True, blank=True)

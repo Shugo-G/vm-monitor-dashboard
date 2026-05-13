@@ -39,13 +39,14 @@ class StatusAPIView(APIView):
                 created = False
 
                 if machine_id:
+                    ip_address = data.get('ip_address')
                     try:
-                        vm = VirtualMachine.objects.get(machine_id=machine_id)
+                        vm = VirtualMachine.objects.get(machine_id=machine_id, ip_address=ip_address)
                         created = False
                     except VirtualMachine.DoesNotExist:
                         # Buscar registro existente por hostname para migrar (no crear duplicado)
-                        existing = VirtualMachine.objects.filter(hostname=hostname).order_by('-last_seen').first()
-                        if existing and existing.machine_id is None:
+                        existing = VirtualMachine.objects.filter(hostname=hostname, machine_id__isnull=True).order_by('-last_seen').first()
+                        if existing:
                             existing.machine_id = machine_id
                             vm = existing
                             created = False
