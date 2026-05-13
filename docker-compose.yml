@@ -10,7 +10,7 @@ services:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
-      - DJANGO_CSRF_TRUSTED_ORIGINS=${DJANGO_CSRF_TRUSTED_ORIGINS}
+      - DJANGO_CSRF_TRUSTED_ORIGINS=${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8080}
       - DB_PATH=${DB_PATH:-/app/data/db.sqlite3}
       - TZ=${TZ:-America/Argentina/Ushuaia}
     volumes:
