@@ -112,7 +112,7 @@ class StatusAPIView(APIView):
 @api_view(['GET'])
 def vm_list(request):
     """Lista todas las VMs con su último estado"""
-    vms = VirtualMachine.objects.prefetch_related('status_history')
+    vms = VirtualMachine.objects.all()
     serializer = VirtualMachineSerializer(vms, many=True)
     return Response(serializer.data)
 
