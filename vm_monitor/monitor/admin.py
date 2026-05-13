@@ -9,6 +9,16 @@ class VirtualMachineAdmin(admin.ModelAdmin):
     search_fields = ['hostname', 'ip_address']
     readonly_fields = ['first_seen', 'last_seen']
 
+    def delete_model(self, request, obj):
+        # Borra los registros de estado primero para evitar timeout en admin
+        obj.status_history.all().delete()
+        obj.delete()
+
+    def delete_queryset(self, request, queryset):
+        for vm in queryset:
+            vm.status_history.all().delete()
+        queryset.delete()
+
 
 class PartitionInline(admin.TabularInline):
     model = Partition
@@ -24,6 +34,7 @@ class VMStatusAdmin(admin.ModelAdmin):
     readonly_fields = ['vm', 'timestamp']
     inlines = [PartitionInline]
     date_hierarchy = 'timestamp'
+    show_full_result_count = False
 
 
 @admin.register(Partition)

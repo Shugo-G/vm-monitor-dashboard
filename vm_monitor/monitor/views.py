@@ -60,6 +60,11 @@ class StatusAPIView(APIView):
                 vm.last_seen = timezone.now()
                 vm.save()
 
+                VMStatus.objects.filter(
+                    vm=vm,
+                    timestamp__lt=timezone.now() - timedelta(days=7)
+                ).delete()
+
                 vm_status = VMStatus.objects.create(
                     vm=vm,
                     timestamp=data['timestamp'],
