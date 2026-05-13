@@ -39,10 +39,13 @@ class StatusAPIView(APIView):
                 created = False
 
                 if machine_id:
-                    vm, created = VirtualMachine.objects.get_or_create(machine_id=machine_id)
+                    vm, created = VirtualMachine.objects.get_or_create(
+                        machine_id=machine_id,
+                        defaults={'hostname': hostname}
+                    )
                 else:
-                    # Reporter sin machine_id: buscar solo entre los que tampoco lo tienen
-                    vm = VirtualMachine.objects.filter(hostname=hostname, machine_id__isnull=True).first()
+                    # Reporter sin machine_id: buscar por hostname sin importar machine_id
+                    vm = VirtualMachine.objects.filter(hostname=hostname).order_by('-last_seen').first()
                     if vm is None:
                         vm = VirtualMachine()
                         created = True
@@ -101,7 +104,7 @@ class StatusAPIView(APIView):
 @api_view(['GET'])
 def vm_list(request):
     """Lista todas las VMs con su último estado"""
-    vms = VirtualMachine.objects.all()
+    vms = VirtualMachine.objects.prefetch_related('status_history')
     serializer = VirtualMachineSerializer(vms, many=True)
     return Response(serializer.data)
 
