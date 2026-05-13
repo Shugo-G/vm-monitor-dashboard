@@ -20,7 +20,7 @@ services:
     networks:
       - shugovision-net
     healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/vms/')\""]
+      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.socket(); s.connect(('127.0.0.1',8000)); s.close()\""]
       interval: 10s
       timeout: 5s
       retries: 5
