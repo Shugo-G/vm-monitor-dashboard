@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-VM Monitoring Client
-Envía estadísticas del sistema al servidor de monitoreo
+VM Monitoring Client — Producción
+Envía estadísticas del sistema a http://server-monitor.ushuaia.gob.ar
 """
 
 import psutil
@@ -14,9 +14,7 @@ import subprocess
 import uuid
 from pathlib import Path
 
-# Configuración
-API_URL = "http://localhost:8080/api/status/"  # Desarrollo local: usar puerto 8080 (Frontend/Nginx)
-# En producción usar: "http://server-monitor.ushuaia.gob.ar/api/status/"
+API_URL = "http://server-monitor.ushuaia.gob.ar/api/status/"
 
 
 def get_machine_id():
@@ -49,18 +47,16 @@ def get_machine_id():
 
 
 def get_hostname():
-    """Obtiene el hostname del sistema"""
     return socket.gethostname()
 
 
 def get_ip_address():
-    """Obtiene la dirección IP principal del sistema"""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
-        ip_address = s.getsockname()[0]
+        ip = s.getsockname()[0]
         s.close()
-        return ip_address
+        return ip
     except Exception:
         try:
             return socket.gethostbyname(socket.gethostname())
@@ -69,7 +65,6 @@ def get_ip_address():
 
 
 def get_os_version():
-    """Obtiene la versión del sistema operativo"""
     try:
         if platform.system() == "Linux":
             with open('/etc/os-release', 'r') as f:
@@ -82,60 +77,50 @@ def get_os_version():
 
 
 def get_cpu_usage():
-    """Obtiene el porcentaje de uso de CPU"""
     return round(psutil.cpu_percent(interval=1), 1)
 
 
 def get_ram_info():
-    """Obtiene información de memoria RAM"""
     mem = psutil.virtual_memory()
     return {
         'total': round(mem.total / (1024 * 1024), 2),
         'used': round(mem.used / (1024 * 1024), 2),
-        'percent': round(mem.percent, 1)
+        'percent': round(mem.percent, 1),
     }
 
 
 def get_disk_info():
-    """Obtiene información de disco total y particiones"""
     partitions_info = []
-    total_disk = 0
-    used_disk = 0
-
+    total_disk = used_disk = 0
     for partition in psutil.disk_partitions(all=False):
         if 'loop' in partition.device or partition.fstype in ['tmpfs', 'devtmpfs']:
             continue
-
         try:
             usage = psutil.disk_usage(partition.mountpoint)
             partitions_info.append({
                 'mountpoint': partition.mountpoint,
                 'total_mb': round(usage.total / (1024 * 1024), 2),
                 'used_mb': round(usage.used / (1024 * 1024), 2),
-                'used_percent': round(usage.percent, 1)
+                'used_percent': round(usage.percent, 1),
             })
             total_disk += usage.total
             used_disk += usage.used
         except (PermissionError, OSError):
             continue
-
     return {
         'total': round(total_disk / (1024 * 1024), 2),
         'used': round(used_disk / (1024 * 1024), 2),
         'percent': round(used_disk / total_disk * 100, 2) if total_disk > 0 else 0,
-        'partitions': partitions_info
+        'partitions': partitions_info,
     }
 
 
 def get_update_count():
-    """Obtiene la cantidad de actualizaciones pendientes (solo Ubuntu/Debian)"""
     try:
         if platform.system() == "Linux":
             result = subprocess.run(
                 ['apt', 'list', '--upgradable'],
-                capture_output=True,
-                text=True,
-                timeout=10
+                capture_output=True, text=True, timeout=10
             )
             if result.returncode == 0:
                 lines = result.stdout.strip().split('\n')
@@ -146,52 +131,49 @@ def get_update_count():
 
 
 def collect_stats():
-    """Recopila todas las estadísticas del sistema"""
-    ram_info = get_ram_info()
-    disk_info = get_disk_info()
-
+    ram = get_ram_info()
+    disk = get_disk_info()
     return {
         'machine_id': get_machine_id(),
         'hostname': get_hostname(),
         'ip_address': get_ip_address(),
         'os_version': get_os_version(),
         'cpu_usage': get_cpu_usage(),
-        'ram_total': ram_info['total'],
-        'ram_used': ram_info['used'],
-        'ram_percent': ram_info['percent'],
-        'disk_total': disk_info['total'],
-        'disk_used': disk_info['used'],
-        'disk_percent': disk_info['percent'],
+        'ram_total': ram['total'],
+        'ram_used': ram['used'],
+        'ram_percent': ram['percent'],
+        'disk_total': disk['total'],
+        'disk_used': disk['used'],
+        'disk_percent': disk['percent'],
         'update_count': get_update_count(),
         'timestamp': datetime.now().astimezone().isoformat(),
-        'partitions': disk_info['partitions']
+        'partitions': disk['partitions'],
     }
 
 
 def send_to_server(data):
-    """Envía los datos al servidor"""
     try:
         response = requests.post(
             API_URL,
             json=[data],
-            timeout=10,
-            verify=False
+            timeout=15,
+            verify=True,
         )
         if response.status_code == 200:
             result = response.json()
-            print(f"✓ Datos enviados correctamente: {result.get('message', 'OK')}")
+            print(f"✓ Datos enviados: {result.get('message', 'OK')}")
             return True
         else:
             print(f"✗ Error del servidor: {response.status_code} - {response.text}")
             return False
     except requests.exceptions.RequestException as e:
-        print(f"✗ Error de conexión: {str(e)}")
+        print(f"✗ Error de conexión: {e}")
         return False
 
 
 def main():
     print("=" * 60)
-    print("VM Monitoring Client")
+    print("VM Monitoring Client — Producción")
     print("=" * 60)
 
     print("Recopilando estadísticas del sistema...")

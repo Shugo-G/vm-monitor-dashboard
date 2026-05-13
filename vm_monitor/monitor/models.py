@@ -5,10 +5,12 @@ from datetime import timedelta
 
 class VirtualMachine(models.Model):
     """Modelo para almacenar información de las VMs"""
-    hostname = models.CharField(max_length=255, unique=True)
+    machine_id = models.CharField(max_length=64, unique=True, null=True, blank=True)
+    hostname = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255, blank=True, default='')
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     os_version = models.CharField(max_length=255)
-    webmin_url = models.URLField(max_length=500, blank=True, null=True)
+    description = models.TextField(blank=True, default='')
     is_visible = models.BooleanField(default=True)
     first_seen = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(default=timezone.now)
@@ -24,27 +26,17 @@ class VirtualMachine(models.Model):
     @property
     def is_stale(self):
         """Devuelve True si la VM no se ha actualizado en los últimos 5 minutos."""
-        
-        # 1. Obtener el último estado
-        # Asumiendo que status_history es el related_name
-        latest_status = self.status_history.order_by('-timestamp').first() 
-        
+        latest_status = self.status_history.order_by('-timestamp').first()
+
         if latest_status:
-            # 2. Calcular la diferencia de tiempo
-            # Asegurar que el timestamp sea timezone-aware
-            last_update = latest_status.timestamp 
+            last_update = latest_status.timestamp
             now = timezone.now()
-            
             time_difference = now - last_update
-            
-            # 3. Definir el umbral de 5 minutos
             STALE_THRESHOLD = timedelta(minutes=5)
-            
             return time_difference > STALE_THRESHOLD
-        
-        # Si no hay registros, también se considera desactualizado (stale)
+
         return True
-    
+
 
 class VMStatus(models.Model):
     """Modelo para almacenar el estado histórico de las VMs"""

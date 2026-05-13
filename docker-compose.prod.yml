@@ -1,16 +1,20 @@
-# Production overrides (Nginx Proxy Manager)
+# Overrides de producción (Nginx Proxy Manager)
+# Uso: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 services:
   backend:
-    env_file: .env
     networks:
+      - shugovision-net
       - npm-net
 
   frontend:
-    # No ports exposed to host. NPM handles traffic via the network.
+    ports: !reset []   # NPM maneja el tráfico, no exponemos al host
     networks:
+      - shugovision-net
       - npm-net
 
 networks:
+  shugovision-net:
+    driver: bridge
   npm-net:
     external: true
     name: nginx-proxy-manager_npm-net

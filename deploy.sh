@@ -9,7 +9,7 @@ echo "🚀 Starting deployment..."
 
 # 1. Pull latest changes from git
 echo "📥 Pulling latest code changes..."
-git pull origin main
+git pull origin version-docker
 
 # 2. Check for .env file
 if [ ! -f .env ]; then
