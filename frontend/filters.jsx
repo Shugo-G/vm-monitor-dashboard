@@ -100,15 +100,15 @@ function AlertsPanel({ vms, onClose, onOpenVm }) {
     if (vm.status === 'offline') {
       alerts.push({ vm, level: 'crit', type: 'down', msg: 'VM sin respuesta', age: '12 min' });
     }
-    if (vm.cpu >= 75) {
-      alerts.push({ vm, level: vm.cpu >= 90 ? 'crit' : 'warn', type: 'cpu', msg: `CPU alto: ${vm.cpu.toFixed(1)}%`, age: 'ahora' });
+    if (vm.cpu > 50) {
+      alerts.push({ vm, level: vm.cpu > 80 ? 'crit' : 'warn', type: 'cpu', msg: `CPU alto: ${vm.cpu.toFixed(1)}%`, age: 'ahora' });
     }
-    if (vm.ram >= 75) {
-      alerts.push({ vm, level: vm.ram >= 90 ? 'crit' : 'warn', type: 'ram', msg: `RAM alta: ${vm.ram.toFixed(1)}%`, age: 'ahora' });
+    if (vm.ram > 50) {
+      alerts.push({ vm, level: vm.ram > 80 ? 'crit' : 'warn', type: 'ram', msg: `RAM alta: ${vm.ram.toFixed(1)}%`, age: 'ahora' });
     }
-    if (vm.disk >= 90) {
+    if (vm.disk > 80) {
       alerts.push({ vm, level: 'crit', type: 'disk', msg: `Disco casi lleno: ${vm.disk.toFixed(1)}%`, age: '3h' });
-    } else if (vm.disk >= 75) {
+    } else if (vm.disk > 50) {
       alerts.push({ vm, level: 'warn', type: 'disk', msg: `Disco alto: ${vm.disk.toFixed(1)}%`, age: '6h' });
     }
     if (vm.updates >= 10) {
