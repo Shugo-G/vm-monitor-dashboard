@@ -1,6 +1,6 @@
 // data.jsx — helpers + API mapper
 
-const sev = (v) => v >= 90 ? 'crit' : v >= 75 ? 'warn' : 'ok';
+const sev = (v) => v >= 81 ? 'crit' : v >= 51 ? 'warn' : 'ok';
 
 function vmSeverity(vm) {
   if (vm.status === 'offline') return 'crit';
